@@ -1,7 +1,7 @@
 ﻿namespace DarkSoulsNameChecker;
 partial record BlockList
 {
-	// I feel bad for whoever made this massive list, very upsetting that K***ht Solaire is blocked.
+	// Thanks to https://github.com/omgftw/DarkSouls3CensorCheck for this Magnificient List!
 	public static readonly string[] DarkSouls3DisallowedTerms = {
 		"69",
 		"666",
@@ -769,7 +769,7 @@ partial record BlockList
 		"neonazi",
 		"neo-nazi",
 		"nice ass",
-		"nig", // Damn you nig!
+		"nig",
 		"nigg3r",
 		"nigg4h",
 		"nigga",
@@ -1360,6 +1360,7 @@ partial record BlockList
 		"yeyo ",
 		"zukiner"
 	};
+	// Be sure to change this
 	public static readonly string[] DarkSouls2DisallowedTerms = {
 		"69",
 		"666",

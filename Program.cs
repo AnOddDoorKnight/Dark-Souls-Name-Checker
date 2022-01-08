@@ -6,7 +6,6 @@ static class Master
 	static internal List<bool> discrepancies = new();
 	static Master()
 	{
-		// Surprisingly, this gets called first before Main()
 		Console.Title = "Dark Souls Name Checker";
 	}
 	static void Main()
@@ -28,17 +27,12 @@ static class Master
 		discrepancies.Add(NameLengthCheck(16));
 		// Checks if theres bad words in the name/string
 		discrepancies.Add(NameBadWordsCheck(BlockList.DarkSouls3DisallowedTerms));
-		bool discrepancy = DiscrepancyCheck();
+
+		bool discrepancy = discrepancies.Contains(true);
 		// Results
 		Console.WriteLine($"Your character name is{(!discrepancy ? "" : " not")} allowed" // Reads bool discrepancy as human.
 			+ $"{(input["defaultValue"].Length > 16 ? "\nYour name is too long" : "")}" // Mentions if name too long, hides otherwise.
 			+ $"{(discrepancy ? $"\nOld: {input["defaultValue"]}, New: {input["value"]}" : "")}"); // shows results if bool discrepancy is enabled.
-	}
-	static bool DiscrepancyCheck()
-	{
-		foreach (bool i in discrepancies)
-			if (i) return true;
-		return false;
 	}
 	static bool NameBadWordsCheck(in string[] badWords)
 	{
