@@ -2,8 +2,15 @@
 partial record BlockList
 {
 	// Thanks to https://github.com/omgftw/DarkSouls3CensorCheck for this Magnificient List!
-	public static readonly string[] DarkSouls3DisallowedTerms = {
-		"69",
+	public static readonly Dictionary<string, byte> lengths = new()
+	{
+		["Dark Souls 3"] = 16,
+	};
+	public static readonly Dictionary<string, string[]> disallowedTerms = new()
+	{
+		["Dark Souls 3"] = new string[]
+		{
+			"69",
 		"666",
 		"$##!+",
 		"$hi7",
@@ -1359,6 +1366,7 @@ partial record BlockList
 		"yeti ",
 		"yeyo ",
 		"zukiner"
+		},
 	};
 	// Be sure to change this
 	public static readonly string[] DarkSouls2DisallowedTerms = {

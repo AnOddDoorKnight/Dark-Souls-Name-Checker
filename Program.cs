@@ -1,9 +1,12 @@
+global using System.Collections.Generic;
+global using System;
 namespace DarkSoulsNameChecker;
 
 static class Master
 {
 	static internal Dictionary<string, string> input = new();
-	static internal List<bool> discrepancies = new();
+	static internal List<HiddenNameSection> hidden = new();
+	static internal HashSet<bool> discrepancies = new();
 	static Master()
 	{
 		Console.Title = "Dark Souls Name Checker";
@@ -27,9 +30,10 @@ static class Master
 		discrepancies.Add(NameLengthCheck(16));
 		// Checks if theres bad words in the name/string
 		discrepancies.Add(NameBadWordsCheck(BlockList.DarkSouls3DisallowedTerms));
-
-		bool discrepancy = discrepancies.Contains(true);
-		// Results
+		Write(discrepancies.Contains(true));
+	}
+	static void Write(bool discrepancy)
+	{   // Results
 		Console.WriteLine($"Your character name is{(!discrepancy ? "" : " not")} allowed" // Reads bool discrepancy as human.
 			+ $"{(input["defaultValue"].Length > 16 ? "\nYour name is too long" : "")}" // Mentions if name too long, hides otherwise.
 			+ $"{(discrepancy ? $"\nOld: {input["defaultValue"]}, New: {input["value"]}" : "")}"); // shows results if bool discrepancy is enabled.
@@ -42,7 +46,7 @@ static class Master
 			else
 			{
 				var = true;
-				input["value"] = input["value"].Replace(i, ReplaceWithHash(i));
+				hidden.Add(new HiddenNameSection(input["value"].IndexOf(i), i.Length));
 			}
 		return var;
 	}
@@ -57,10 +61,22 @@ static class Master
 		return false;
 	}
 	// Replaces the word with hashtags; normal word => hashtags with the length of word
-	static string ReplaceWithHash(string input)
+}
+public struct HiddenNameSection
+{
+	public int start, length;
+	public string Value => ToString();
+	public HiddenNameSection(int start, int length)
 	{
-		string output = "";
-		for (int i = input.Length; i > 0; i--) output += "*";
-		return output;
+		this.start = start;
+		this.length = length;
+	}
+	public string Apply(string input) => input.Remove(start, length).Insert(start, Value);
+	public override string ToString()
+	{
+		string foo = "";
+		for (int i = 0; i < length; i++)
+			foo += "*";
+		return foo;
 	}
 }
