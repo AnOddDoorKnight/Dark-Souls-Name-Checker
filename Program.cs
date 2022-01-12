@@ -4,9 +4,6 @@ namespace DarkSoulsNameChecker;
 
 static class Master
 {
-	static internal Dictionary<string, string> input = new();
-	static internal List<HiddenNameSection> hidden = new();
-	static internal HashSet<bool> discrepancies = new();
 	static Master()
 	{
 		Console.Title = "Dark Souls Name Checker";
@@ -14,58 +11,72 @@ static class Master
 	static void Main()
 	{
 		//Console.Write("Choose\n1. Ds1\n2. Ds2\n 3. Ds3");
-		DarkSouls3Checker();
+		Console.WriteLine(DSNameChecker(Game.Ds3));
 		// Pause before ending
 		Console.WriteLine("Press any key to quit!");
 		Console.ReadKey(false);
 	}
-	static void DarkSouls3Checker()
+}
+public class DSNameChecker
+{
+	internal string[] input = new string[2];
+	internal List<HiddenNameSection> badWords;
+	internal bool nameChanged, nameTooLong, hasBadWords;
+	public DSNameChecker(Game game)
 	{
-		Console.WriteLine("Running Dark Souls 3 Name Checker...");
-		// This is input
 		Console.Write("Input Name: ");
-		input.Add("value", Console.ReadLine() ?? string.Empty);
-		input.Add("defaultValue", input["value"]);
-		// Checks Name/String Length, will remove extra characters before any name checking
-		discrepancies.Add(NameLengthCheck(16));
-		// Checks if theres bad words in the name/string
-		discrepancies.Add(NameBadWordsCheck(BlockList.DarkSouls3DisallowedTerms));
-		Write(discrepancies.Contains(true));
+		input[0] = Console.ReadLine() ?? "";
+		input[1] = input[0];
+		HashSet<bool> discrepancies = new();
+		nameTooLong = NameLengthCheck(input[0], BlockList.lengths[game]), out input[0] ?? input[0]);
+		discrepancies.Add(nameTooLong);
+		hasBadWords = NameBadWordsCheck(input[0],BlockList.disallowedTerms[game], out input[0], out badWords);
+		discrepancies.Add(hasBadWords);
+		nameChanged = discrepancies.Contains(true);
 	}
-	static void Write(bool discrepancy)
-	{   // Results
-		Console.WriteLine($"Your character name is{(!discrepancy ? "" : " not")} allowed" // Reads bool discrepancy as human.
-			+ $"{(input["defaultValue"].Length > 16 ? "\nYour name is too long" : "")}" // Mentions if name too long, hides otherwise.
-			+ $"{(discrepancy ? $"\nOld: {input["defaultValue"]}, New: {input["value"]}" : "")}"); // shows results if bool discrepancy is enabled.
-	}
-	static bool NameBadWordsCheck(in string[] badWords)
+	private static bool NameLengthCheck(in string input, in byte maxLength, out string? output)
 	{
-		bool var = false;
-		foreach (string i in badWords)
-			if (!input["value"].Contains(i)) continue;
-			else
-			{
-				var = true;
-				hidden.Add(new HiddenNameSection(input["value"].IndexOf(i), i.Length));
-			}
-		return var;
-	}
-	// Measures name length, replaces with nothing when its longer than specified and returns true
-	static bool NameLengthCheck(in byte maxLength = 16)
-	{
-		if (input["value"].Length > maxLength)
+		if (input.Length > maxLength)
 		{
-			input["value"] = input["value"].Remove(maxLength);
+			output = input.Remove(maxLength);
 			return true;
 		}
+		output = null;
 		return false;
 	}
-	// Replaces the word with hashtags; normal word => hashtags with the length of word
+	static bool NameBadWordsCheck(in string input, in string[] badWords, out string output, out List<HiddenNameSection> outputList)
+	{
+		outputList = new List<HiddenNameSection>();
+		bool var = false;
+		foreach (string i in badWords)
+			if (input.Contains(i)) 
+			{
+				var = true;
+				outputList.Add(new HiddenNameSection(input.IndexOf(i), i.Length));
+			}
+		output = input;
+		foreach (HiddenNameSection i in outputList)
+			output = i.Apply(output);
+		return var;
+	}
+	public override string ToString()
+	{   // Results
+		bool discrepancy = discrepancies.Contains(true);
+		return $"Your character name is{(discrepancy ? " not" : "")} allowed" // Reads bool discrepancy as human.
+			+ $"{(nameTooLong ? "\nYour name is too long" : "")}" // Mentions if name too long, hides otherwise.
+			+ $"{(discrepancy ? $"\nOld: {input[0]}, New: {input[1]}" : "")}"); // shows results if bool discrepancy is enabled.
+	}
 }
 public struct HiddenNameSection
 {
 	public int start, length;
-	public string Value => ToString();
+	public readonly string? original = null;
+	public HiddenNameSection(string original, int start)
+	{
+		this.original = original;
+		this.start = start;
+		this.length = original.length;
+	}
 	public HiddenNameSection(int start, int length)
 	{
 		this.start = start;
@@ -79,4 +90,9 @@ public struct HiddenNameSection
 			foo += "*";
 		return foo;
 	}
+}
+public enum Game
+{
+	Ds2
+	Ds3
 }
