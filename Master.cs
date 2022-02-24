@@ -109,4 +109,5 @@ public enum Game
 	DsR,
 	Ds2,
 	Ds3,
+	ER,
 }

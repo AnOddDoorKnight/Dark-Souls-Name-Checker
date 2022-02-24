@@ -7,6 +7,7 @@ partial record BlockList
 		Game.DsR => 10,
 		Game.Ds2 => 14,
 		Game.Ds3 => 16,
+		Game.ER => 16,
 		_ => throw new NotImplementedException(),
 	};
 	public static byte? TryGetNameLength(Game game)
