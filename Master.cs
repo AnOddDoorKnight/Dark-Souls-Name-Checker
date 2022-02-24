@@ -9,7 +9,7 @@ static class Master
 	{
 		Title = "Dark Souls Name Checker";
 	}
-	static void Main()
+	static void Main(string[] args)
 	{
 		//Console.Write("Choose\n1. Ds1\n2. Ds2\n 3. Ds3");
 		WriteLine("Choose what game: ");
