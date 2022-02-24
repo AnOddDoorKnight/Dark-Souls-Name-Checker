@@ -7,4 +7,15 @@ partial record BlockList
 		Game.Ds3 => 16,
 		_ => throw new NotImplementedException(),
 	};
+	public static byte? TryGetNameLength(Game game)
+	{
+		try
+		{
+			return GetNameLength(game);
+		}
+		catch (NotImplementedException)
+		{
+			return null;
+		}
+	}
 }

@@ -40,11 +40,12 @@ public class DSNameChecker
 		input[1] = input[0];
 		return new DSNameChecker(game, input[0]);
 	}
-	private static bool NameLengthCheck(ref string input, in byte maxLength)
+	private static bool NameLengthCheck(ref string input, in byte? maxLength)
 	{
+		if (maxLength == null) return true;
 		if (input.Length > maxLength)
 		{
-			input = input.Remove(maxLength);
+			input = input.Remove(maxLength.Value);
 			return true;
 		}
 		return false;
@@ -100,6 +101,7 @@ public struct HiddenNameSection
 }
 public enum Game
 {
+	DsR,
 	Ds2,
-	Ds3
+	Ds3,
 }
