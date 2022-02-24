@@ -11,7 +11,7 @@ static class Master
 	static void Main()
 	{
 		//Console.Write("Choose\n1. Ds1\n2. Ds2\n 3. Ds3");
-		Console.WriteLine(new DSNameChecker(Game.Ds3));
+		Console.WriteLine(DSNameChecker.CreateViaPlayerInput(Game.Ds3));
 		// Pause before ending
 		Console.WriteLine("Press any key to quit!");
 		Console.ReadKey(false);
@@ -22,17 +22,23 @@ public class DSNameChecker
 	internal string[] input = new string[2];
 	internal List<HiddenNameSection> badWords;
 	internal bool nameChanged, nameTooLong, hasBadWords;
-	public DSNameChecker(Game game)
+	public DSNameChecker(Game game, string name)
 	{
+		input[0] = name; input[1] = name;
+		HashSet<bool> discrepancies = new();
+		nameTooLong = NameLengthCheck(ref input[0], BlockList.GetNameLength(game));
+		discrepancies.Add(nameTooLong);
+		hasBadWords = NameBadWordsCheck(ref input[0],BlockList.GetList(game), out badWords);
+		discrepancies.Add(hasBadWords);
+		nameChanged = discrepancies.Contains(true);
+	}
+	public static DSNameChecker CreateViaPlayerInput(Game game)
+	{
+		string[] input = new string[2];
 		Console.Write("Input Name: ");
 		input[0] = Console.ReadLine() ?? "";
 		input[1] = input[0];
-		HashSet<bool> discrepancies = new();
-		nameTooLong = NameLengthCheck(ref input[0], BlockList.lengths[game]);
-		discrepancies.Add(nameTooLong);
-		hasBadWords = NameBadWordsCheck(ref input[0],BlockList.disallowedTerms[game], out badWords);
-		discrepancies.Add(hasBadWords);
-		nameChanged = discrepancies.Contains(true);
+		return new DSNameChecker(game, input[0]);
 	}
 	private static bool NameLengthCheck(ref string input, in byte maxLength)
 	{
