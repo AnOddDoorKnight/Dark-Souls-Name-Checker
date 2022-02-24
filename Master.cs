@@ -1,20 +1,25 @@
 global using System.Collections.Generic;
 global using System;
+using static System.Console;
 namespace DarkSoulsNameChecker;
 
 static class Master
 {
 	static Master()
 	{
-		Console.Title = "Dark Souls Name Checker";
+		Title = "Dark Souls Name Checker";
 	}
 	static void Main()
 	{
 		//Console.Write("Choose\n1. Ds1\n2. Ds2\n 3. Ds3");
-		Console.WriteLine(DSNameChecker.CreateViaPlayerInput(Game.Ds3));
+		WriteLine("Choose what game: ");
+		foreach (Game i in Enum.GetValues<Game>())
+			WriteLine($"{i.GetHashCode()}. {i}");
+		Game game = Enum.Parse<Game>(ReadLine() ?? string.Empty);
+		WriteLine(DSNameChecker.CreateViaPlayerInput(game));
 		// Pause before ending
-		Console.WriteLine("Press any key to quit!");
-		Console.ReadKey(false);
+		WriteLine("Press any key to quit!");
+		ReadKey(false);
 	}
 }
 public class DSNameChecker
@@ -26,7 +31,7 @@ public class DSNameChecker
 	{
 		input[0] = name; input[1] = name;
 		HashSet<bool> discrepancies = new();
-		nameTooLong = NameLengthCheck(ref input[0], BlockList.GetNameLength(game));
+		nameTooLong = NameLengthCheck(ref input[0], BlockList.TryGetNameLength(game));
 		discrepancies.Add(nameTooLong);
 		hasBadWords = NameBadWordsCheck(ref input[0],BlockList.GetList(game), out badWords);
 		discrepancies.Add(hasBadWords);
@@ -35,14 +40,14 @@ public class DSNameChecker
 	public static DSNameChecker CreateViaPlayerInput(Game game)
 	{
 		string[] input = new string[2];
-		Console.Write("Input Name: ");
-		input[0] = Console.ReadLine() ?? "";
+		Write("Input Name: ");
+		input[0] = ReadLine() ?? "";
 		input[1] = input[0];
 		return new DSNameChecker(game, input[0]);
 	}
 	private static bool NameLengthCheck(ref string input, in byte? maxLength)
 	{
-		if (maxLength == null) return true;
+		if (maxLength == null) return false;
 		if (input.Length > maxLength)
 		{
 			input = input.Remove(maxLength.Value);
@@ -50,7 +55,7 @@ public class DSNameChecker
 		}
 		return false;
 	}
-	static bool NameBadWordsCheck(ref string input, in string[] badWords, out List<HiddenNameSection> outputList)
+	private static bool NameBadWordsCheck(ref string input, in string[] badWords, out List<HiddenNameSection> outputList)
 	{
 		outputList = new List<HiddenNameSection>();
 		bool var = false;
